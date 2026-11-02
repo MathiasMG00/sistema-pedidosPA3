@@ -2,6 +2,7 @@ package com.isil.edu.pe.spedidos.repository;
 
 import com.isil.edu.pe.spedidos.entity.Pedido;
 import com.isil.edu.pe.spedidos.repository.mapper.PedidoRowMapper;
+import com.isil.edu.pe.spedidos.repository.projection.ClienteFrecuenteDto;
 import com.isil.edu.pe.spedidos.repository.projection.ProductoVendidoProjection;
 import com.isil.edu.pe.spedidos.repository.projection.ResumenPedidosProjection;
 import java.math.BigDecimal;
@@ -157,5 +158,56 @@ public class PedidoReporteJdbcRepository {
     return valor != null
         ? valor
         : BigDecimal.ZERO;
+  }
+
+
+  // Implementación de buscarPedidosPorClienteYTotalMinino(Cliente, totalMinimo)
+  public List<Pedido> buscarPedidosPorClienteYTotalMinino(String cliente, BigDecimal totalMinimo) {
+    String sql = """
+        Select %s
+        From pedido
+        Where LOWER(cliente) LIKE LOWER(:cliente)
+          And total >= :totalMinimo
+        Order By id DESC
+        """.formatted(COLUMNAS_PEDIDO);
+    
+    Map<String, Object> parametros = Map.of(
+        "cliente", "%" + cliente.trim() + "%",
+        "totalMinimo", totalMinimo
+    );
+    return namedParameterJdbcTemplate.query(
+        sql,
+        parametros,
+        pedidoRowMapper
+    );
+  }
+  // Implementación de listarClientesFrecuentes(minPedidos)
+  public List<ClienteFrecuenteDto> listarClientesFrecuentes(long minPedidos) {
+    String sql = """
+        Select cliente,
+            Count(*) As totalPedidos,
+            Sum(cantidad) As totalUnidades,
+            Sum(total) As importeAcumulado,
+            Avg(total) As ticketPromedio
+        From pedido
+        Group By cliente
+        Having Count(*) >= :minPedidos
+        Order By Count(*) DESC
+        """;
+    
+    Map<String, Object> parametros = Map.of(
+        "minPedidos", minPedidos
+    );
+    return namedParameterJdbcTemplate.query(
+        sql,
+        parametros,
+        (rs, rowNum) -> new ClienteFrecuenteDto(
+            rs.getString("cliente"),
+            rs.getLong("totalPedidos"),
+            rs.getLong("totalUnidades"),
+            rs.getBigDecimal("importeAcumulado"),
+            rs.getBigDecimal("ticketPromedio")
+        )
+    );
   }
 }
