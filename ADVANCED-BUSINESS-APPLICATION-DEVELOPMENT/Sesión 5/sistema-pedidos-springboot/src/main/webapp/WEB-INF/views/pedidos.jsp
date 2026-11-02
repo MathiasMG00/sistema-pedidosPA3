@@ -157,6 +157,10 @@
             </table>
         </div>
     </section>
+    <section>
+        <c:url var="reportesUrl" value="/reportes/pedidos" />
+        <a href="${reportesUrl}" class="btn-reportes">Ver reportes</a>
+    </section>
 </div>
 </body>
 </html>

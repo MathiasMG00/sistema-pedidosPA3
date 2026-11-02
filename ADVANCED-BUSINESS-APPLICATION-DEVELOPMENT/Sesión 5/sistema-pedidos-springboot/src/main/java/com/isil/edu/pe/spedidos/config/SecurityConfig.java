@@ -28,6 +28,8 @@ public class SecurityConfig {
               .hasAnyRole("OPERADOR", "CONSULTA")
             .requestMatchers(HttpMethod.GET, "/pedidos")
               .hasAnyRole("OPERADOR", "CONSULTA")
+            .requestMatchers(HttpMethod.GET, "/reportes/**")
+              .hasAnyRole("OPERADOR", "CONSULTA")
             .anyRequest().authenticated()
         )
         .formLogin(Customizer.withDefaults())

@@ -2,10 +2,13 @@ package com.isil.edu.pe.spedidos.controller;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+import com.isil.edu.pe.spedidos.controller.dto.ClienteFrecuenteDto;
 import com.isil.edu.pe.spedidos.controller.dto.PedidoResponse;
 import com.isil.edu.pe.spedidos.controller.dto.ProductoVendidoDto;
 import com.isil.edu.pe.spedidos.controller.dto.ResumenPedidosDto;
 import com.isil.edu.pe.spedidos.service.PedidoReporteService;
+
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -76,6 +79,32 @@ public class PedidoReporteController {
 
   private Link linkPedidos() {
     return Link.of(linkTo(PedidoReporteController.class).toUri() + "{?cliente}");
+  }
+
+  // API para buscar pedidos por cliente y minimo
+  @GetMapping (value = "/busqueda-avanzada", produces = MediaType.APPLICATION_JSON_VALUE) 
+  public ResponseEntity<List<PedidoResponse>> buscarPedidosPorClienteYTotalMinino(
+      @RequestParam String cliente, 
+      @RequestParam BigDecimal totalMinimo) {
+    
+    List<PedidoResponse> pedidos = reporteService.buscarPedidosPorClienteYTotalMinino(cliente, totalMinimo)
+        .stream()
+        .map(PedidoResponse::from)
+        .toList();
+    
+    return ResponseEntity.ok(pedidos);
+  }
+  // API para listar clientes frecuentes con un minimo de pedidos
+  @GetMapping (value = "/clientes-frecuentes", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<ClienteFrecuenteDto>> listarClientesFrecuentes(
+      @RequestParam Long minPedidos) {
+    
+    List<ClienteFrecuenteDto> clientesFrecuentes = reporteService.listarClientesFrecuentes(minPedidos)
+        .stream()
+        .map(ClienteFrecuenteDto::from)
+        .toList();
+    
+    return ResponseEntity.ok(clientesFrecuentes);
   }
 }
 
