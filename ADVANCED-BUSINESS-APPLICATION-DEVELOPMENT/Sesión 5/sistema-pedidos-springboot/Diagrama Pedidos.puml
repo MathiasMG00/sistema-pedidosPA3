@@ -1,0 +1,32 @@
+@startuml
+title Sistema de Pedidos - Arquitectura simplificada
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+top to bottom direction
+
+actor "Usuario web\n/ Postman" as usuario
+
+package "Sistema de Pedidos - Spring Boot" {
+    component "Controladores\nSpring MVC / REST\n(vistas JSP / respuestas JSON)" as controladores
+    component "Servicios\nPedidos y reportes\nReglas de negocio" as servicios
+    component "Repositorios\nSpring Data JPA / JDBC" as repositorios
+    component "Cliente de inventario\nInventarioRestClient" as clienteInventario
+}
+
+database "MySQL\npedidosdb" as db
+component "Servicio de Inventario\nAPI externa" as inventario
+
+usuario --> controladores : HTTP (web / JSON)
+controladores --> servicios : Registrar y consultar pedidos
+servicios --> repositorios : Guardar pedidos / consultar reportes
+repositorios --> db : JPA / JDBC
+servicios --> clienteInventario : Consultar productos / reservar stock
+clienteInventario --> inventario : HTTP + JSON
+
+note right of controladores
+  Spring Security protege el acceso
+  con los roles OPERADOR y CONSULTA.
+end note
+
+@enduml

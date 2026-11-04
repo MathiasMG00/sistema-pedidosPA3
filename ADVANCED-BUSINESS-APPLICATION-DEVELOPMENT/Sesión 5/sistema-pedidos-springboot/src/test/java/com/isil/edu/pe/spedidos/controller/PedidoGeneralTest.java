@@ -129,7 +129,6 @@ class PedidoGeneralTest {
         assertThat(cliente.cliente()).isEqualTo("Ana Torres");
         assertThat(cliente.totalPedidos()).isEqualTo(2);
         verifyNoInteractions(inventarioClient);
-
     }
 
     // CASO 3: parámetros inválidos
@@ -160,7 +159,6 @@ class PedidoGeneralTest {
         when(inventarioClient.reservarStock("PRO-001", 1))
                 .thenThrow(new InventarioNoDisponibleException(
                         "El servicio de inventario no está disponible."));
-
         mockMvc.perform(post("/pedidos")
                 .with(user("operador").roles("OPERADOR"))
                 .with(csrf())
@@ -169,9 +167,7 @@ class PedidoGeneralTest {
                 .param("cantidad", "1"))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(view().name("error"))
-                .andExpect(model().attribute(
-                        "error",
-                        "El servicio de inventario no está disponible."));
+                .andExpect(model().attribute( "error", "El servicio de inventario no está disponible."));
 
         verify(inventarioClient).reservarStock("PRO-001", 1);
         clearInvocations(inventarioClient);
@@ -185,11 +181,7 @@ class PedidoGeneralTest {
                 .with(user("consulta").roles("CONSULTA")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("reportes-pedidos"))
-                .andExpect(model().attributeExists(
-                        "resumen",
-                        "productosMasVendidos",
-                        "clientesFrecuentes"));
-
+                .andExpect(model().attributeExists( "resumen", "productosMasVendidos", "clientesFrecuentes"));
         verifyNoInteractions(inventarioClient);
     }
 
