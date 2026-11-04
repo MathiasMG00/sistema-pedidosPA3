@@ -4,17 +4,13 @@ import com.isil.edu.pe.spedidos.client.InventarioClient;
 import com.isil.edu.pe.spedidos.client.InventarioNoDisponibleException;
 import com.isil.edu.pe.spedidos.controller.dto.ClienteFrecuenteDto;
 import com.isil.edu.pe.spedidos.entity.Pedido;
-import com.isil.edu.pe.spedidos.repository.PedidoReporteJdbcRepository;
-import com.isil.edu.pe.spedidos.service.domain.ResumenPedidos;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-class PedidoTestGeneral {
+class PedidoGeneralTest {
 
     private MockMvc mockMvc;
 
@@ -138,7 +134,6 @@ class PedidoTestGeneral {
 
     // CASO 3: parámetros inválidos
     @Test
-    @MethodSource("parametrosInvalidos")
     @DisplayName("Controller: rechaza parámetros inválidos con HTTP 400")
     void rechazarParametrosInvalidosEnReportes()
             throws Exception {
