@@ -1,6 +1,7 @@
 package com.isil.edu.pe.spedidos.service.impl;
 
 import com.isil.edu.pe.spedidos.entity.Pedido;
+import com.isil.edu.pe.spedidos.exception.PedidoException;
 import com.isil.edu.pe.spedidos.repository.PedidoReporteJdbcRepository;
 import com.isil.edu.pe.spedidos.repository.projection.ResumenPedidosProjection;
 import com.isil.edu.pe.spedidos.service.PedidoReporteService;
@@ -31,7 +32,7 @@ public class PedidoReporteServiceImpl implements PedidoReporteService {
   @Override
   public List<Pedido> buscarPorCliente(String cliente) {
     if (cliente == null || cliente.isBlank()) {
-      return List.of();
+      throw new PedidoException("El cliente no puede ser nulo o vacío.");
     }
 
     return jdbcRepository.buscarPorCliente(cliente);
@@ -56,7 +57,7 @@ public class PedidoReporteServiceImpl implements PedidoReporteService {
   public List<Pedido> buscarPedidosPorClienteYTotalMinino(String cliente, BigDecimal totalMinimo) {
     
     if (cliente == null || cliente.isBlank() || totalMinimo == null || totalMinimo.compareTo(BigDecimal.ZERO) < 0) {
-      return List.of();
+      throw new PedidoException("Datos inválidos para la búsqueda de pedidos.");
     }
     
     return jdbcRepository.buscarPedidosPorClienteYTotalMinino(cliente, totalMinimo);
@@ -66,7 +67,7 @@ public class PedidoReporteServiceImpl implements PedidoReporteService {
   public List<ClienteFrecuente> listarClientesFrecuentes(Long minPedidos) {
 
     if (minPedidos == null || minPedidos < 1) {
-      return List.of();
+      throw new PedidoException("El mínimo de pedidos debe ser mayor o igual a 1.");
     }
 
     return jdbcRepository.listarClientesFrecuentes(minPedidos)
